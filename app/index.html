@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Rocket Flight Predictor</title>
+  <meta name="description" content="Predict how high your Estes rocket will fly and where it will land. Works offline.">
+  <meta name="theme-color" content="#0f1830">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Rockets">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <header class="top">
+    <h1><span class="logo" aria-hidden="true">🚀</span> Rocket Flight Predictor</h1>
+    <div class="units" role="group" aria-label="Units">
+      <button type="button" data-units="imperial">ft · mph</button>
+      <button type="button" data-units="metric">m · km/h</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="card" id="step-rocket">
+      <h2><span class="num">1</span> Pick a rocket</h2>
+      <div class="kit-grid" id="kits"></div>
+    </section>
+
+    <div class="setup">
+    <section class="card" id="step-engine">
+      <h2><span class="num">2</span> <span id="engine-title">Pick the engine</span></h2>
+      <div id="configs" class="seg"></div>
+      <div id="stages"></div>
+      <p class="hint" id="engine-explain"></p>
+    </section>
+
+    <section class="card" id="step-weight">
+      <h2><span class="num">3</span> Weight <button type="button" class="term" data-term="weight">?</button></h2>
+      <div id="weights"></div>
+    </section>
+
+    <section class="card" id="step-launch">
+      <h2><span class="num">4</span> Launch and weather</h2>
+      <div class="field">
+        <label for="angle">Launch angle <button type="button" class="term" data-term="angle">?</button></label>
+        <div class="slider-row"><input type="range" id="angle" min="60" max="90" step="1" value="90"><output id="angle-out">90°</output></div>
+      </div>
+      <div class="field" id="tilt-field" hidden>
+        <label>Tilted toward</label>
+        <div class="compass-pick" id="tilt"></div>
+      </div>
+      <div class="field">
+        <label for="wind">Wind speed <button type="button" class="term" data-term="wind">?</button></label>
+        <div class="slider-row"><input type="range" id="wind" min="0" max="25" step="1" value="0"><output id="wind-out">0 mph</output></div>
+      </div>
+      <div class="field" id="wind-dir-field">
+        <label>Wind blowing from</label>
+        <div class="compass-pick" id="wind-from"></div>
+      </div>
+      <details class="more">
+        <summary>Launch site, forecast and more</summary>
+        <div id="site"></div>
+        <div class="field two">
+          <div>
+            <label for="elev">Field elevation <button type="button" class="term" data-term="elevation">?</button></label>
+            <div class="input-unit"><input type="number" id="elev" inputmode="numeric" min="-500" max="15000"><span id="elev-unit">ft</span></div>
+          </div>
+          <div>
+            <label for="temp">Temperature</label>
+            <div class="input-unit"><input type="number" id="temp" inputmode="numeric" placeholder="normal"><span id="temp-unit">°F</span></div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="rod">Launch rod length <button type="button" class="term" data-term="rod">?</button></label>
+          <div class="input-unit"><input type="number" id="rod" inputmode="decimal" min="1" max="10" step="0.5"><span id="rod-unit">ft</span></div>
+        </div>
+      </details>
+    </section>
+
+    </div>
+
+    <section class="card results" id="results" aria-live="polite"></section>
+  </main>
+
+  <footer class="foot">
+    <p>Predictions are estimates for stock Estes kits on Estes-recommended engines. Real flights vary: how you built it, how the wind really blows, and how the parachute opens all matter. Always follow the <a href="https://www.nar.org/safety-information/model-rocket-safety-code/" target="_blank" rel="noopener">NAR Model Rocket Safety Code</a>.</p>
+    <p>Motor data from <a href="https://www.thrustcurve.org/" target="_blank" rel="noopener">ThrustCurve.org</a>. Weather from <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>. Not affiliated with Estes. <span id="offline-status"></span></p>
+  </footer>
+
+  <div class="pop" id="pop" role="dialog" aria-modal="true" hidden>
+    <div class="pop-body">
+      <h3 id="pop-title"></h3>
+      <p id="pop-text"></p>
+      <button type="button" id="pop-close">Got it</button>
+    </div>
+  </div>
+
+  <script src="catalog.js"></script>
+  <script src="sim.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

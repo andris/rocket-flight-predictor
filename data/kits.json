@@ -1,0 +1,179 @@
+{
+  "_readme": "Hand-curated Estes kit catalog. Lengths/diameters in meters, masses in grams (without engines). 'estimated' lists every value that is a guess rather than an Estes spec; replace guesses with real measurements as we get them. Engines are Estes's recommended list only. For multi-stage kits, mass_g is the upper rocket alone and each booster stage carries its own mass_g.",
+  "kits": [
+    {
+      "id": "alpha",
+      "name": "Alpha",
+      "sku": "001225",
+      "skill": "Beginner",
+      "source": "https://estesrockets.com/products/alpha",
+      "length_m": 0.312,
+      "diameter_m": 0.0249,
+      "mass_g": 22.7,
+      "cd": 0.7,
+      "recovery": {"type": "parachute", "diameter_in": 12},
+      "estes_max_altitude_ft": 1000,
+      "estes_altitude_note": "Estes: up to 1000 ft on a C engine",
+      "estimated": ["cd"],
+      "configs": [
+        {"id": "single", "name": "Single stage", "stages": [
+          {"engines": ["1/2A6-2", "A8-3", "A8-5", "B4-4", "B6-4", "B6-6", "C6-5", "C6-7"]}
+        ]}
+      ]
+    },
+    {
+      "id": "alpha-iii",
+      "name": "Alpha III",
+      "sku": "001256",
+      "skill": "Beginner",
+      "source": "https://estesrockets.com/products/alpha-iii",
+      "length_m": 0.307,
+      "diameter_m": 0.0249,
+      "mass_g": 34,
+      "cd": 0.7,
+      "recovery": {"type": "parachute", "diameter_in": 12},
+      "estes_max_altitude_ft": 1150,
+      "estes_altitude_note": "Estes: up to 1150 ft, engine not stated",
+      "estimated": ["cd"],
+      "configs": [
+        {"id": "single", "name": "Single stage", "stages": [
+          {"engines": ["1/2A6-2", "A8-3", "A8-5", "B4-4", "B6-4", "B6-6", "C6-5", "C6-7"]}
+        ]}
+      ]
+    },
+    {
+      "id": "generic-e2x",
+      "name": "Generic E2X",
+      "sku": "002008",
+      "skill": "Beginner",
+      "source": "https://store.hobbyetc.com/parts/view/124924",
+      "length_m": 0.343,
+      "diameter_m": 0.0249,
+      "mass_g": 36.9,
+      "cd": 0.7,
+      "recovery": {"type": "parachute", "diameter_in": 12},
+      "estes_max_altitude_ft": 1100,
+      "estes_altitude_note": "Estes: up to 1100 ft (some Estes pages say 1325 ft)",
+      "estimated": ["cd"],
+      "configs": [
+        {"id": "single", "name": "Single stage", "stages": [
+          {"engines": ["1/2A6-2", "A8-3", "A8-5", "B4-4", "B6-4", "B6-6", "C6-5", "C6-7"]}
+        ]}
+      ]
+    },
+    {
+      "id": "big-bertha",
+      "name": "Big Bertha",
+      "sku": "001948",
+      "skill": "Beginner",
+      "source": "https://estesrockets.com/products/big-bertha",
+      "length_m": 0.61,
+      "diameter_m": 0.0417,
+      "mass_g": 70.9,
+      "cd": 0.8,
+      "recovery": {"type": "parachute", "diameter_in": 18},
+      "estes_max_altitude_ft": 500,
+      "estes_altitude_note": "Estes: up to 500 ft",
+      "estimated": ["cd"],
+      "configs": [
+        {"id": "single", "name": "Single stage", "stages": [
+          {"engines": ["B4-2", "B4-4", "B6-2", "B6-4", "C6-5"]}
+        ]}
+      ]
+    },
+    {
+      "id": "amazon",
+      "name": "Amazon",
+      "sku": "001469",
+      "skill": "Beginner",
+      "source": "https://estesrockets.com/products/tandem-x-launch-set",
+      "length_m": 0.747,
+      "diameter_m": 0.0338,
+      "mass_g": 85,
+      "cd": 0.75,
+      "recovery": {"type": "parachute", "diameter_in": 18},
+      "estes_max_altitude_ft": 600,
+      "estes_altitude_note": "Estes: up to 600 ft (sold in the Tandem-X launch set)",
+      "estimated": ["cd"],
+      "configs": [
+        {"id": "single", "name": "Single stage", "stages": [
+          {"engines": ["B4-2", "B4-4", "B6-2", "B6-4", "C5-3", "C6-3", "C6-5"]}
+        ]}
+      ]
+    },
+    {
+      "id": "green-eggs",
+      "name": "Green Eggs",
+      "sku": "007301",
+      "skill": "Intermediate",
+      "source": "https://estesrockets.com/products/green-eggs",
+      "length_m": 0.599,
+      "diameter_m": 0.046,
+      "mass_g": 99.2,
+      "cd": 0.8,
+      "recovery": {"type": "parachute", "diameter_in": 18},
+      "estes_max_altitude_ft": 1050,
+      "estes_altitude_note": "Estes: 1050 ft without an egg, 825 ft with an egg",
+      "estimated": ["cd", "egg mass (50 g per medium egg)"],
+      "configs": [
+        {"id": "no-egg", "name": "No egg", "stages": [
+          {"engines": ["C11-5", "D12-5"]}
+        ]},
+        {"id": "one-egg", "name": "One egg", "payload_g": 50, "estes_max_altitude_ft": 825, "stages": [
+          {"engines": ["C11-3", "D12-3"]}
+        ]},
+        {"id": "two-eggs", "name": "Two eggs", "payload_g": 100, "stages": [
+          {"engines": ["D12-3"]}
+        ]}
+      ]
+    },
+    {
+      "id": "mongoose",
+      "name": "Mongoose",
+      "sku": "002092",
+      "skill": "Intermediate",
+      "source": "https://erockets.biz/estes-flying-model-rocket-kit-mongoose-est-2092",
+      "length_m": 0.673,
+      "diameter_m": 0.0249,
+      "mass_g": 53,
+      "cd": 0.7,
+      "recovery": {"type": "parachute", "diameter_in": 12},
+      "estes_max_altitude_ft": 1600,
+      "estes_altitude_note": "Estes: up to 1600 ft as a two-stager",
+      "estimated": ["cd", "split of the 65 g kit weight between rocket and booster"],
+      "configs": [
+        {"id": "two-stage", "name": "Two stage", "stages": [
+          {"role": "booster", "engines": ["B6-0", "C6-0"], "mass_g": 12, "length_m": 0.11},
+          {"engines": ["A8-5", "B6-6", "C6-7"]}
+        ]},
+        {"id": "single", "name": "Single stage (no booster)", "stages": [
+          {"engines": ["A8-3", "B4-4", "B6-4", "C6-5"]}
+        ]}
+      ]
+    },
+    {
+      "id": "so-long",
+      "name": "So Long",
+      "sku": "009722",
+      "skill": "Advanced",
+      "source": "https://estesrockets.com/products/so-long",
+      "length_m": 1.173,
+      "diameter_m": 0.031,
+      "mass_g": 128,
+      "cd": 0.55,
+      "recovery": {"type": "streamer", "count": 2, "width_in": 2, "length_in": 36},
+      "estes_max_altitude_ft": 3600,
+      "estes_altitude_note": "Estes: up to 3600 ft as a two-stager",
+      "estimated": ["cd", "split of the 163 g kit weight between rocket and booster", "streamer size"],
+      "configs": [
+        {"id": "two-stage", "name": "Two stage", "stages": [
+          {"role": "booster", "engines": ["E16-0", "F15-0"], "mass_g": 35, "length_m": 0.25},
+          {"engines": ["E16-8", "F15-8"]}
+        ]},
+        {"id": "single", "name": "Single stage (no booster)", "stages": [
+          {"engines": ["E16-6", "E16-8", "F15-6", "F15-8"]}
+        ]}
+      ]
+    }
+  ]
+}
