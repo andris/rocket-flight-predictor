@@ -25,6 +25,7 @@
     wind: ["Wind", "Use the wind about 30 feet up (that's what forecasts report). Wind is the biggest reason predictions miss, so the app tries many slightly different winds and shows where the rocket will probably land. Don't launch if the wind is over 20 mph."],
     elevation: ["Field elevation", "How high above sea level you are launching. The air is thinner up high (like here in Colorado), so rockets fly higher. Picking a launch site fills this in."],
     rod: ["Launch rod", "The metal rod that guides the rocket for its first few feet until it's going fast enough for the fins to keep it straight. Most Estes pads have a 3 ft rod."],
+    recovery: ["Recovery", "What brings the rocket down gently: a parachute or a streamer. A streamer is a long ribbon that flutters and slows the rocket a little. It comes down faster, so it lands closer and the wind carries it less. A parachute lands softer but drifts much farther in wind."],
     descent: ["Descent rate", "How fast the rocket falls under its parachute or streamer. Slower means a softer landing but more drift."],
   };
 
@@ -46,7 +47,7 @@
   const DEFAULTS = {
     kitId: CAT.kits[0].id, configId: null, engines: [],
     angle: 90, toward: 0, windMs: 0, windFrom: 0, elevM: 1615, tempC: null, rodM: 0.9,
-    units: "imperial", siteId: null, forecastTime: null, fromForecast: null,
+    units: "imperial", recovery: {}, siteId: null, forecastTime: null, fromForecast: null,
   };
   const S = Object.assign({}, DEFAULTS, load("state", {}));
   let weights = load("weights", {});   // {kitId: {rocket: g, booster0: g, updated: iso}}
@@ -74,6 +75,12 @@
   const kit = () => CAT.kits.find((k) => k.id === S.kitId) || CAT.kits[0];
   const config = () => { const k = kit(); return k.configs.find((c) => c.id === S.configId) || k.configs[0]; };
   const motorOf = (code) => CAT.motors[SIM.parseEngine(code)[0]];
+  // Recovery choices for a kit; the first is what comes in the box.
+  const recOptions = (k) => k.recovery_options || [Object.assign({ id: "kit", name: "Kit", mass_delta_g: 0 }, k.recovery)];
+  const recFor = (k, id) => { const o = recOptions(k); return o.find((r) => r.id === id) || o[0]; };
+  const recOpt = () => recFor(kit(), (S.recovery || {})[S.kitId]);
+  // The kit as it will fly: chosen recovery, with kit weight adjusted to match.
+  const flyKit = () => { const k = kit(), r = recOpt(); return Object.assign({}, k, { recovery: r, mass_g: k.mass_g + (r.mass_delta_g || 0) }); };
   const hasBooster = (k) => k.configs.some((c) => c.stages.length > 1);
   function boosterSpecs(k) {
     // booster stages by index, taken from the first multi-stage config
@@ -132,6 +139,9 @@
         <div class="chips">${st.engines.map((e) => `<button type="button" class="chip${S.engines[i] === e ? " on" : ""}" data-stage="${i}" data-engine="${esc(e)}">${esc(e)}</button>`).join("")}</div>
       </div>`;
     }).join("");
+    const opts = recOptions(k), cur = recOpt();
+    $("recovery").innerHTML = opts.length > 1 ? `<div class="stage"><div class="stage-label">${term("recovery", "Recovery")}</div>
+      <div class="chips">${opts.map((r) => `<button type="button" class="chip${r.id === cur.id ? " on" : ""}" data-recovery="${esc(r.id)}">${esc(r.name)}</button>`).join("")}</div></div>` : "";
     const top = S.engines[S.engines.length - 1];
     const [name, delay] = SIM.parseEngine(top);
     const m = motorOf(top);
@@ -162,13 +172,14 @@
   }
 
   function renderWeights() {
-    const k = kit();
+    const k = flyKit();
     const multi = hasBooster(k);
     const est = (word) => (k.estimated || []).some((e) => e.indexOf(word) >= 0);
     let html = weightPart(k, "rocket", multi ? "Top stage (rocket without booster)" : k.name, k.mass_g, multi && est("split"));
     boosterSpecs(k).forEach((b, i) => { html += weightPart(k, "booster" + i, "Booster", b.mass_g, est("split")); });
     const c = config();
     if (c.payload_g) html += `<p class="small">Plus ${mass(c.payload_g)} of payload (${esc(c.name.toLowerCase())}).</p>`;
+    if (recOptions(k).length > 1) html += `<p class="small">Weigh it with the recovery you'll fly (now: ${esc(recOpt().name)}). If you switch later, the app adjusts your weight for you.</p>`;
     html += `<p class="small">Weigh it ready to fly but with no engine. ${weights[k.id] && weights[k.id].updated ? "Last weighed " + new Date(weights[k.id].updated).toLocaleDateString() + "." : ""}</p>`;
     $("weights").innerHTML = html;
   }
@@ -286,7 +297,10 @@
   function overrides() {
     const w = weights[S.kitId] || {};
     const ov = { mass_g: {} };
-    if (w.rocket != null) ov.mass_g.rocket = w.rocket;
+    if (w.rocket != null) {
+      const then = recFor(kit(), w.rocket_recovery), now = recOpt();
+      ov.mass_g.rocket = w.rocket + (now.mass_delta_g || 0) - (then.mass_delta_g || 0);
+    }
     Object.keys(w).forEach((k) => { if (k.indexOf("booster") === 0 && w[k] != null) ov.mass_g[k] = w[k]; });
     return ov;
   }
@@ -378,7 +392,7 @@
       <circle cx="${X(0)}" cy="${Z(0)}" r="5" fill="var(--pad)"/>
       <circle cx="${X(ap[0])}" cy="${Z(ap[1])}" r="5" fill="var(--sky)"/>
       <text x="${nudge(X(ap[0]))}" y="${Z(ap[1]) - 8}" text-anchor="${anchor(X(ap[0]))}">peak</text>
-      ${ej ? `<circle cx="${X(ej[0])}" cy="${Z(ej[1])}" r="4" fill="var(--good)"/><text x="${nudge(X(ej[0]))}" y="${Z(ej[1]) + 18}" text-anchor="${anchor(X(ej[0]))}">${kit().recovery.type === "streamer" ? "streamer" : "parachute"} out</text>` : ""}
+      ${ej ? `<circle cx="${X(ej[0])}" cy="${Z(ej[1])}" r="4" fill="var(--good)"/><text x="${nudge(X(ej[0]))}" y="${Z(ej[1]) + 18}" text-anchor="${anchor(X(ej[0]))}">${recOpt().type === "streamer" ? "streamer" : "parachute"} out</text>` : ""}
       <text x="${W - padR}" y="${H - 6}" text-anchor="end">→ toward landing</text>
     </svg>`;
   }
@@ -392,7 +406,7 @@
   function delayAdvice(res) {
     const n = res.nominal, c = config(), top = S.engines[S.engines.length - 1];
     const [name, delay] = SIM.parseEngine(top);
-    if (!n.eject) return { cls: "bad", html: `<strong>Hits the ground before the ${kit().recovery.type} comes out!</strong> Pick an engine with a shorter delay.` };
+    if (!n.eject) return { cls: "bad", html: `<strong>Hits the ground before the ${recOpt().type} comes out!</strong> Pick an engine with a shorter delay.` };
     const early = n.apogee_t - n.eject.t;  // >0: opens before the peak
     const options = c.stages[c.stages.length - 1].engines.filter((e) => SIM.parseEngine(e)[0] === name);
     const best = options.reduce((a, e) => (Math.abs(SIM.parseEngine(e)[1] - n.best_delay) < Math.abs(SIM.parseEngine(a)[1] - n.best_delay) ? e : a), top);
@@ -404,7 +418,7 @@
 
   function update() {
     persist();
-    const k = kit(), c = config();
+    const k = flyKit(), c = config();
     const launch = { angle_deg: S.angle, toward_deg: S.toward, rod_m: S.rodM, elev_m: S.elevM };
     const wind = { speed: S.windMs, from_deg: S.windFrom, temp_c: S.tempC };
     let res;
@@ -460,7 +474,7 @@
 
     const fc = S.fromForecast ? `<p class="small">Weather: forecast for ${esc(S.fromForecast)}.</p>` : "";
     $("results").innerHTML = `
-      <h2>Prediction: ${esc(k.name)} on ${esc(stageTxt)}</h2>
+      <h2>Prediction: ${esc(k.name)} on ${esc(stageTxt)}${recOptions(kit()).length > 1 ? `, ${esc(recOpt().name.toLowerCase())}` : ""}</h2>
       ${fc}
       <div class="big-row">
         <div class="big"><div class="k">How high ${term("apogee", "(apogee)")}</div>
@@ -484,6 +498,7 @@
     const h = new URLSearchParams(location.hash.slice(1));
     if (h.get("kit")) { S.kitId = h.get("kit"); S.configId = h.get("config"); }
     if (h.get("engines")) S.engines = h.get("engines").split(",");
+    if (h.get("recovery")) S.recovery = Object.assign({}, S.recovery, { [S.kitId]: h.get("recovery") });
     if (h.get("wind")) S.windMs = +h.get("wind") * MS_PER_MPH;
     if (h.get("from")) S.windFrom = +h.get("from");
     if (h.get("angle")) S.angle = +h.get("angle");
@@ -516,6 +531,7 @@
     if (d.kit) { S.kitId = d.kit; S.configId = null; renderAll(); return; }
     if (d.config) { S.configId = d.config; renderAll(); return; }
     if (d.engine) { S.engines[+d.stage] = d.engine; renderEngines(); update(); return; }
+    if (d.recovery) { S.recovery = Object.assign({}, S.recovery, { [S.kitId]: d.recovery }); renderEngines(); renderWeights(); update(); return; }
     if (d.units) { S.units = d.units; renderAll(); return; }
     if (d.toward != null) { S.toward = +d.toward; renderLaunch(); update(); return; }
     if (d.from != null) { S.windFrom = +d.from; S.fromForecast = null; renderLaunch(); update(); return; }
@@ -606,7 +622,11 @@
       const key = t.dataset.weigh, v = parseFloat(t.value);
       const w = weights[S.kitId] = weights[S.kitId] || {};
       if (t.value === "" || !(v > 0)) delete w[key];
-      else { w[key] = imp() ? v * G_PER_OZ : v; w.updated = new Date().toISOString(); }
+      else {
+        w[key] = imp() ? v * G_PER_OZ : v;
+        w.updated = new Date().toISOString();
+        if (key === "rocket") w.rocket_recovery = recOpt().id;
+      }
       save("weights", weights);
       update();
     }

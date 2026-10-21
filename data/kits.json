@@ -1,5 +1,5 @@
 {
-  "_readme": "Hand-curated Estes kit catalog. Lengths/diameters in meters, masses in grams (without engines). 'estimated' lists every value that is a guess rather than an Estes spec; replace guesses with real measurements as we get them. Engines are Estes's recommended list only. For multi-stage kits, mass_g is the upper rocket alone and each booster stage carries its own mass_g.",
+  "_readme": "Hand-curated Estes kit catalog. Lengths/diameters in meters, masses in grams (without engines). 'estimated' lists every value that is a guess rather than an Estes spec; replace guesses with real measurements as we get them. Engines are Estes's recommended list only. For multi-stage kits, mass_g is the upper rocket alone and each booster stage carries its own mass_g. Optional recovery_options lets a kit fly with alternative recovery; the first option must match recovery, and mass_delta_g is that option's weight change from the kit spec.",
   "kits": [
     {
       "id": "alpha",
@@ -368,7 +368,8 @@
       "estimated": [
         "cd",
         "split of the 163 g kit weight between rocket and booster",
-        "streamer size"
+        "streamer size",
+        "rip-stop parachute weight (about 8 g more than the streamers)"
       ],
       "configs": [
         {
@@ -405,6 +406,24 @@
               ]
             }
           ]
+        }
+      ],
+      "recovery_options": [
+        {
+          "id": "streamers",
+          "name": "Kit streamers",
+          "type": "streamer",
+          "count": 2,
+          "width_in": 2,
+          "length_in": 36,
+          "mass_delta_g": 0
+        },
+        {
+          "id": "ripstop-15",
+          "name": "15\" rip-stop parachute",
+          "type": "parachute",
+          "diameter_in": 15,
+          "mass_delta_g": 8
         }
       ]
     }

@@ -27,6 +27,11 @@ def main():
     used = set()
     errors = []
     for kit in kits:
+        opts = kit.get("recovery_options")
+        if opts:
+            first = {k: v for k, v in opts[0].items() if k not in ("id", "name", "mass_delta_g")}
+            if first != kit["recovery"] or opts[0].get("mass_delta_g", 0) != 0:
+                errors.append(f"{kit['id']}: first recovery option must match recovery, with no mass change")
         for cfg in kit["configs"]:
             for i, st in enumerate(cfg["stages"]):
                 booster = i < len(cfg["stages"]) - 1

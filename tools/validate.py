@@ -17,8 +17,16 @@ FT = 3.28084
 def main():
     kits = json.loads((ROOT / "data" / "kits.json").read_text())["kits"]
     motors = json.loads((ROOT / "data" / "motors.json").read_text())
+    flown = []
     for kit in kits:
-        print(f"\n{kit['name']}  (Estes: {kit['estes_altitude_note']})")
+        for opt in kit.get("recovery_options", [None]):
+            if opt is None:
+                flown.append((kit, ""))
+            else:
+                k = dict(kit, recovery=opt, mass_g=kit["mass_g"] + opt.get("mass_delta_g", 0))
+                flown.append((k, f" — {opt['name']}"))
+    for kit, label in flown:
+        print(f"\n{kit['name']}{label}  (Estes: {kit['estes_altitude_note']})")
         for cfg in kit["configs"]:
             stacks = [[]]
             for st in cfg["stages"]:
