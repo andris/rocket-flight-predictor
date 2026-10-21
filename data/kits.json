@@ -11,34 +11,34 @@
       "diameter_m": 0.0249,
       "mass_g": 22.7,
       "cd": 0.7,
-      "recovery": {"type": "parachute", "diameter_in": 12},
+      "recovery": {
+        "type": "parachute",
+        "diameter_in": 12
+      },
       "estes_max_altitude_ft": 1000,
       "estes_altitude_note": "Estes: up to 1000 ft on a C engine",
-      "estimated": ["cd"],
+      "estimated": [
+        "cd"
+      ],
       "configs": [
-        {"id": "single", "name": "Single stage", "stages": [
-          {"engines": ["1/2A6-2", "A8-3", "A8-5", "B4-4", "B6-4", "B6-6", "C6-5", "C6-7"]}
-        ]}
-      ]
-    },
-    {
-      "id": "alpha-iii",
-      "name": "Alpha III",
-      "sku": "001256",
-      "skill": "Beginner",
-      "source": "https://estesrockets.com/products/alpha-iii",
-      "length_m": 0.307,
-      "diameter_m": 0.0249,
-      "mass_g": 34,
-      "cd": 0.7,
-      "recovery": {"type": "parachute", "diameter_in": 12},
-      "estes_max_altitude_ft": 1150,
-      "estes_altitude_note": "Estes: up to 1150 ft, engine not stated",
-      "estimated": ["cd"],
-      "configs": [
-        {"id": "single", "name": "Single stage", "stages": [
-          {"engines": ["1/2A6-2", "A8-3", "A8-5", "B4-4", "B6-4", "B6-6", "C6-5", "C6-7"]}
-        ]}
+        {
+          "id": "single",
+          "name": "Single stage",
+          "stages": [
+            {
+              "engines": [
+                "1/2A6-2",
+                "A8-3",
+                "A8-5",
+                "B4-4",
+                "B6-4",
+                "B6-6",
+                "C6-5",
+                "C6-7"
+              ]
+            }
+          ]
+        }
       ]
     },
     {
@@ -51,14 +51,34 @@
       "diameter_m": 0.0249,
       "mass_g": 36.9,
       "cd": 0.7,
-      "recovery": {"type": "parachute", "diameter_in": 12},
+      "recovery": {
+        "type": "parachute",
+        "diameter_in": 12
+      },
       "estes_max_altitude_ft": 1100,
       "estes_altitude_note": "Estes: up to 1100 ft (some Estes pages say 1325 ft)",
-      "estimated": ["cd"],
+      "estimated": [
+        "cd"
+      ],
       "configs": [
-        {"id": "single", "name": "Single stage", "stages": [
-          {"engines": ["1/2A6-2", "A8-3", "A8-5", "B4-4", "B6-4", "B6-6", "C6-5", "C6-7"]}
-        ]}
+        {
+          "id": "single",
+          "name": "Single stage",
+          "stages": [
+            {
+              "engines": [
+                "1/2A6-2",
+                "A8-3",
+                "A8-5",
+                "B4-4",
+                "B6-4",
+                "B6-6",
+                "C6-5",
+                "C6-7"
+              ]
+            }
+          ]
+        }
       ]
     },
     {
@@ -71,14 +91,31 @@
       "diameter_m": 0.0417,
       "mass_g": 70.9,
       "cd": 0.8,
-      "recovery": {"type": "parachute", "diameter_in": 18},
+      "recovery": {
+        "type": "parachute",
+        "diameter_in": 18
+      },
       "estes_max_altitude_ft": 500,
       "estes_altitude_note": "Estes: up to 500 ft",
-      "estimated": ["cd"],
+      "estimated": [
+        "cd"
+      ],
       "configs": [
-        {"id": "single", "name": "Single stage", "stages": [
-          {"engines": ["B4-2", "B4-4", "B6-2", "B6-4", "C6-5"]}
-        ]}
+        {
+          "id": "single",
+          "name": "Single stage",
+          "stages": [
+            {
+              "engines": [
+                "B4-2",
+                "B4-4",
+                "B6-2",
+                "B6-4",
+                "C6-5"
+              ]
+            }
+          ]
+        }
       ]
     },
     {
@@ -91,14 +128,103 @@
       "diameter_m": 0.0338,
       "mass_g": 85,
       "cd": 0.75,
-      "recovery": {"type": "parachute", "diameter_in": 18},
+      "recovery": {
+        "type": "parachute",
+        "diameter_in": 18
+      },
       "estes_max_altitude_ft": 600,
       "estes_altitude_note": "Estes: up to 600 ft (sold in the Tandem-X launch set)",
-      "estimated": ["cd"],
+      "estimated": [
+        "cd"
+      ],
       "configs": [
-        {"id": "single", "name": "Single stage", "stages": [
-          {"engines": ["B4-2", "B4-4", "B6-2", "B6-4", "C5-3", "C6-3", "C6-5"]}
-        ]}
+        {
+          "id": "single",
+          "name": "Single stage",
+          "stages": [
+            {
+              "engines": [
+                "B4-2",
+                "B4-4",
+                "B6-2",
+                "B6-4",
+                "C5-3",
+                "C6-3",
+                "C6-5"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "solo",
+      "name": "Solo",
+      "sku": "007288",
+      "skill": "Beginner",
+      "source": "https://estesrockets.com/products/solo-model-rocket",
+      "length_m": 0.643,
+      "diameter_m": 0.0338,
+      "mass_g": 93.6,
+      "cd": 0.75,
+      "recovery": {
+        "type": "parachute",
+        "diameter_in": 15
+      },
+      "estes_max_altitude_ft": 500,
+      "estes_altitude_note": "Estes: up to 500 ft",
+      "estimated": [
+        "cd",
+        "the glider pod isn't modeled separately \u2014 we assume it rides down with the main body"
+      ],
+      "configs": [
+        {
+          "id": "single",
+          "name": "Single stage",
+          "stages": [
+            {
+              "engines": [
+                "B6-2",
+                "C5-3",
+                "C6-3"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kerbal",
+      "name": "Kerbal Rocket",
+      "sku": "009726",
+      "skill": "Intermediate",
+      "source": "https://estesrockets.com/products/kerbal-rocket",
+      "length_m": 0.49,
+      "diameter_m": 0.0417,
+      "mass_g": 99,
+      "cd": 0.8,
+      "recovery": {
+        "type": "parachute",
+        "diameter_in": 15
+      },
+      "estes_max_altitude_ft": 375,
+      "estes_altitude_note": "Estes: up to 375 ft",
+      "estimated": [
+        "cd"
+      ],
+      "configs": [
+        {
+          "id": "single",
+          "name": "Single stage",
+          "stages": [
+            {
+              "engines": [
+                "C5-3",
+                "C6-3"
+              ]
+            }
+          ]
+        }
       ]
     },
     {
@@ -111,20 +237,55 @@
       "diameter_m": 0.046,
       "mass_g": 99.2,
       "cd": 0.8,
-      "recovery": {"type": "parachute", "diameter_in": 18},
+      "recovery": {
+        "type": "parachute",
+        "diameter_in": 18
+      },
       "estes_max_altitude_ft": 1050,
       "estes_altitude_note": "Estes: 1050 ft without an egg, 825 ft with an egg",
-      "estimated": ["cd", "egg mass (50 g per medium egg)"],
+      "estimated": [
+        "cd",
+        "egg mass (50 g per medium egg)"
+      ],
       "configs": [
-        {"id": "no-egg", "name": "No egg", "stages": [
-          {"engines": ["C11-5", "D12-5"]}
-        ]},
-        {"id": "one-egg", "name": "One egg", "payload_g": 50, "estes_max_altitude_ft": 825, "stages": [
-          {"engines": ["C11-3", "D12-3"]}
-        ]},
-        {"id": "two-eggs", "name": "Two eggs", "payload_g": 100, "stages": [
-          {"engines": ["D12-3"]}
-        ]}
+        {
+          "id": "no-egg",
+          "name": "No egg",
+          "stages": [
+            {
+              "engines": [
+                "C11-5",
+                "D12-5"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "one-egg",
+          "name": "One egg",
+          "payload_g": 50,
+          "estes_max_altitude_ft": 825,
+          "stages": [
+            {
+              "engines": [
+                "C11-3",
+                "D12-3"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "two-eggs",
+          "name": "Two eggs",
+          "payload_g": 100,
+          "stages": [
+            {
+              "engines": [
+                "D12-3"
+              ]
+            }
+          ]
+        }
       ]
     },
     {
@@ -137,18 +298,53 @@
       "diameter_m": 0.0249,
       "mass_g": 53,
       "cd": 0.7,
-      "recovery": {"type": "parachute", "diameter_in": 12},
+      "recovery": {
+        "type": "parachute",
+        "diameter_in": 12
+      },
       "estes_max_altitude_ft": 1600,
       "estes_altitude_note": "Estes: up to 1600 ft as a two-stager",
-      "estimated": ["cd", "split of the 65 g kit weight between rocket and booster"],
+      "estimated": [
+        "cd",
+        "split of the 65 g kit weight between rocket and booster"
+      ],
       "configs": [
-        {"id": "two-stage", "name": "Two stage", "stages": [
-          {"role": "booster", "engines": ["B6-0", "C6-0"], "mass_g": 12, "length_m": 0.11},
-          {"engines": ["A8-5", "B6-6", "C6-7"]}
-        ]},
-        {"id": "single", "name": "Single stage (no booster)", "stages": [
-          {"engines": ["A8-3", "B4-4", "B6-4", "C6-5"]}
-        ]}
+        {
+          "id": "two-stage",
+          "name": "Two stage",
+          "stages": [
+            {
+              "role": "booster",
+              "engines": [
+                "B6-0",
+                "C6-0"
+              ],
+              "mass_g": 12,
+              "length_m": 0.11
+            },
+            {
+              "engines": [
+                "A8-5",
+                "B6-6",
+                "C6-7"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "single",
+          "name": "Single stage (no booster)",
+          "stages": [
+            {
+              "engines": [
+                "A8-3",
+                "B4-4",
+                "B6-4",
+                "C6-5"
+              ]
+            }
+          ]
+        }
       ]
     },
     {
@@ -161,18 +357,55 @@
       "diameter_m": 0.031,
       "mass_g": 128,
       "cd": 0.55,
-      "recovery": {"type": "streamer", "count": 2, "width_in": 2, "length_in": 36},
+      "recovery": {
+        "type": "streamer",
+        "count": 2,
+        "width_in": 2,
+        "length_in": 36
+      },
       "estes_max_altitude_ft": 3600,
       "estes_altitude_note": "Estes: up to 3600 ft as a two-stager",
-      "estimated": ["cd", "split of the 163 g kit weight between rocket and booster", "streamer size"],
+      "estimated": [
+        "cd",
+        "split of the 163 g kit weight between rocket and booster",
+        "streamer size"
+      ],
       "configs": [
-        {"id": "two-stage", "name": "Two stage", "stages": [
-          {"role": "booster", "engines": ["E16-0", "F15-0"], "mass_g": 35, "length_m": 0.25},
-          {"engines": ["E16-8", "F15-8"]}
-        ]},
-        {"id": "single", "name": "Single stage (no booster)", "stages": [
-          {"engines": ["E16-6", "E16-8", "F15-6", "F15-8"]}
-        ]}
+        {
+          "id": "two-stage",
+          "name": "Two stage",
+          "stages": [
+            {
+              "role": "booster",
+              "engines": [
+                "E16-0",
+                "F15-0"
+              ],
+              "mass_g": 35,
+              "length_m": 0.25
+            },
+            {
+              "engines": [
+                "E16-8",
+                "F15-8"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "single",
+          "name": "Single stage (no booster)",
+          "stages": [
+            {
+              "engines": [
+                "E16-6",
+                "E16-8",
+                "F15-6",
+                "F15-8"
+              ]
+            }
+          ]
+        }
       ]
     }
   ]
