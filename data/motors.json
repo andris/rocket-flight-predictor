@@ -2,6 +2,7 @@
  "1/2A6": {
   "name": "1/2A6",
   "diameter_mm": 18,
+  "length_mm": 70,
   "impulse_ns": 1.13,
   "avg_thrust_n": 3.42,
   "burn_time_s": 0.33,
@@ -99,6 +100,7 @@
  "A8": {
   "name": "A8",
   "diameter_mm": 18,
+  "length_mm": 70,
   "impulse_ns": 2.5,
   "avg_thrust_n": 3.18,
   "burn_time_s": 0.73,
@@ -208,6 +210,7 @@
  "B4": {
   "name": "B4",
   "diameter_mm": 18,
+  "length_mm": 70,
   "impulse_ns": 5,
   "avg_thrust_n": 4.17,
   "burn_time_s": 1.03,
@@ -341,6 +344,7 @@
  "B6": {
   "name": "B6",
   "diameter_mm": 18,
+  "length_mm": 70,
   "impulse_ns": 4.33,
   "avg_thrust_n": 5.03,
   "burn_time_s": 0.86,
@@ -454,6 +458,7 @@
  "C5": {
   "name": "C5",
   "diameter_mm": 18,
+  "length_mm": 70,
   "impulse_ns": 7.79,
   "avg_thrust_n": 3.91,
   "burn_time_s": 1.99,
@@ -595,6 +600,7 @@
  "C6": {
   "name": "C6",
   "diameter_mm": 18,
+  "length_mm": 70,
   "impulse_ns": 8.82,
   "avg_thrust_n": 4.74,
   "burn_time_s": 1.86,
@@ -708,6 +714,7 @@
  "C11": {
   "name": "C11",
   "diameter_mm": 24,
+  "length_mm": 70,
   "impulse_ns": 8.8,
   "avg_thrust_n": 10.86,
   "burn_time_s": 0.81,
@@ -833,6 +840,7 @@
  "D12": {
   "name": "D12",
   "diameter_mm": 24,
+  "length_mm": 70,
   "impulse_ns": 16.84,
   "avg_thrust_n": 10.21,
   "burn_time_s": 1.65,
@@ -930,6 +938,7 @@
  "E16": {
   "name": "E16",
   "diameter_mm": 29,
+  "length_mm": 114,
   "impulse_ns": 33.38,
   "avg_thrust_n": 15.97,
   "burn_time_s": 2.09,
@@ -1063,6 +1072,7 @@
  "F15": {
   "name": "F15",
   "diameter_mm": 29,
+  "length_mm": 114,
   "impulse_ns": 49.61,
   "avg_thrust_n": 14.38,
   "burn_time_s": 3.45,

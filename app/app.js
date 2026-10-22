@@ -80,7 +80,7 @@
   const DEFAULTS = {
     kitId: CAT.kits[0].id, configId: null, engines: [],
     angle: 90, toward: 0, windMs: 0, windFrom: 0, elevM: 1615, tempC: null, rodM: 0.9,
-    units: "imperial", recovery: {}, siteId: null, forecastTime: null, fromForecast: null,
+    units: "imperial", recovery: {}, siteId: null, forecastTime: null, fromForecast: null, showAll: false,
   };
   const S = Object.assign({}, DEFAULTS, load("state", {}));
   let weights = load("weights", {});   // {kitId: {rocket: g, booster0: g, updated: iso}}
@@ -121,12 +121,34 @@
     return c ? c.stages.slice(0, -1) : [];
   }
 
+  // Engines Estes doesn't list for this stage but that physically fit its mount: same
+  // diameter, no longer than the longest recommended one. Boosters must be -0; the top
+  // stage never is (no ejection charge means no parachute).
+  function alsoFits(st, isBooster) {
+    const rec = st.engines.map(motorOf);
+    const dia = rec[0].diameter_mm, maxLen = Math.max.apply(null, rec.map((m) => m.length_mm));
+    const out = [];
+    Object.keys(CAT.motors).map((k) => CAT.motors[k])
+      .filter((m) => m.diameter_mm === dia && m.length_mm <= maxLen)
+      .sort((a, b) => a.impulse_ns - b.impulse_ns)
+      .forEach((m) => m.delays.split(",").map(Number).sort((a, b) => a - b).forEach((d) => {
+        const code = `${m.name}-${d}`;
+        if ((d === 0) === isBooster && !st.engines.includes(code)) out.push(code);
+      }));
+    return out;
+  }
+  const stageEngines = (c, i) => {
+    const st = c.stages[i];
+    return S.showAll ? st.engines.concat(alsoFits(st, i < c.stages.length - 1)) : st.engines;
+  };
+  const offList = () => { const c = config(); return S.engines.filter((e, i) => !c.stages[i].engines.includes(e)); };
+
   function fixSelection() {
     const k = kit();
     S.kitId = k.id;
     const c = config();
     S.configId = c.id;
-    S.engines = c.stages.map((st, i) => (st.engines.includes(S.engines[i]) ? S.engines[i] : st.engines[Math.floor((st.engines.length - 1) / 2)]));
+    S.engines = c.stages.map((st, i) => (stageEngines(c, i).includes(S.engines[i]) ? S.engines[i] : st.engines[Math.floor((st.engines.length - 1) / 2)]));
   }
 
   // ---------- rocket silhouettes ----------
@@ -164,14 +186,20 @@
       ? k.configs.map((x) => `<button type="button" data-config="${x.id}" class="${x.id === c.id ? "on" : ""}">${esc(x.name)}</button>`).join("")
       : "";
     $("engine-title").textContent = c.stages.length > 1 ? "Pick the engines" : "Pick the engine";
+    const chip = (e, i, extra) => `<button type="button" class="chip${extra ? " extra" : ""}${S.engines[i] === e ? " on" : ""}" data-stage="${i}" data-engine="${esc(e)}">${esc(e)}</button>`;
+    const mm = motorOf(c.stages[0].engines[0]).diameter_mm;
     $("stages").innerHTML = c.stages.map((st, i) => {
       const isBooster = i < c.stages.length - 1;
       const label = c.stages.length === 1 ? "Engine" : isBooster ? `Bottom stage — ${term("booster", "booster")}` : "Top stage";
+      const extra = S.showAll ? alsoFits(st, isBooster) : [];
       return `<div class="stage">
         <div class="stage-label">${label}</div>
-        <div class="chips">${st.engines.map((e) => `<button type="button" class="chip${S.engines[i] === e ? " on" : ""}" data-stage="${i}" data-engine="${esc(e)}">${esc(e)}</button>`).join("")}</div>
+        ${S.showAll ? `<div class="chips-label">Estes recommends</div>` : ""}
+        <div class="chips">${st.engines.map((e) => chip(e, i)).join("")}</div>
+        ${S.showAll ? `<div class="chips-label">Also fits, not on Estes's list</div>
+          <div class="chips">${extra.length ? extra.map((e) => chip(e, i, true)).join("") : `<span class="small">No others in our engine list.</span>`}</div>` : ""}
       </div>`;
-    }).join("");
+    }).join("") + `<label class="check"><input type="checkbox" id="show-all"${S.showAll ? " checked" : ""}> Show other engines that fit (${mm} mm)</label>`;
     const opts = recOptions(k), cur = recOpt();
     $("recovery").innerHTML = opts.length > 1 ? `<div class="stage"><div class="stage-label">${term("recovery", "Recovery")}</div>
       <div class="chips">${opts.map((r) => `<button type="button" class="chip${r.id === cur.id ? " on" : ""}" data-recovery="${esc(r.id)}">${esc(r.name)}</button>`).join("")}</div></div>` : "";
@@ -535,6 +563,8 @@
 
     // notes
     const notes = [delayAdvice(res)];
+    const off = offList();
+    if (off.length) notes.unshift({ cls: "warn", html: `<strong>${esc(off.join(" and "))} ${off.length > 1 ? "aren't" : "isn't"} on Estes's list for the ${esc(k.name)}.</strong> It fits the engine mount, but Estes hasn't tested it in this rocket. Check the notes below for a bad ejection time, a slow takeoff or a hard landing before you try it for real.` });
     if (S.windMs > 20 * MS_PER_MPH) notes.push({ cls: "bad", html: `<strong>Too windy to launch.</strong> The safety code says no launches in wind over 20 mph.` });
     if (n.rod_exit_v < Math.max(9, 3 * S.windMs)) notes.push({ cls: "warn", html: `<strong>Slow off the rod (${speed(n.rod_exit_v)}).</strong> It may ${term("weathercock", "weathercock")} hard into the wind or wobble. A longer rod helps.` });
     if (n.eject && n.eject.speed > 25) notes.push({ cls: "warn", html: `<strong>The ${rec} comes out fast (${speed(n.eject.speed)}).</strong> That can rip a parachute or snap a shock cord.` });
@@ -570,7 +600,11 @@
     if (!location.hash) return;
     const h = new URLSearchParams(location.hash.slice(1));
     if (h.get("kit")) { S.kitId = h.get("kit"); S.configId = h.get("config"); }
-    if (h.get("engines")) S.engines = h.get("engines").split(",");
+    if (h.get("engines")) {
+      S.engines = h.get("engines").split(",");
+      const c = config();
+      if (S.engines.some((e, i) => c.stages[i] && !c.stages[i].engines.includes(e))) S.showAll = true;
+    }
     if (h.get("recovery")) S.recovery = Object.assign({}, S.recovery, { [S.kitId]: h.get("recovery") });
     if (h.get("wind")) S.windMs = +h.get("wind") * MS_PER_MPH;
     if (h.get("from")) S.windFrom = +h.get("from");
@@ -694,6 +728,9 @@
       const s = site();
       if (s) S.elevM = s.elev_m;
       renderLaunch(); update();
+    } else if (t.id === "show-all") {
+      S.showAll = t.checked;
+      fixSelection(); renderEngines(); update();
     } else if (t.id === "fc-time") {
       S.forecastTime = t.value; persist(); renderSite();
     }

@@ -66,6 +66,7 @@ def main():
         out[name] = {
             "name": name,
             "diameter_mm": m["diameter"],
+            "length_mm": m["length"],
             "impulse_ns": round(m["totImpulseNs"], 2),
             "avg_thrust_n": round(m["avgThrustN"], 2),
             "burn_time_s": round(m["burnTimeS"], 3),
