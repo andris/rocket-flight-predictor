@@ -158,6 +158,9 @@ main {
 .input-unit { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--bg); }
 .input-unit input { border: 0; background: none; padding: 10px 12px; width: 100%; min-width: 0; min-height: 44px; font-size: 17px; }
 .input-unit span { padding: 0 12px; color: var(--ink-2); font-size: 15px; }
+.input-unit.odd { border: 2px solid var(--bad); }
+.input-unit.odd input { color: var(--bad); font-weight: 700; }
+.flag { color: var(--bad); font-size: 14px; font-weight: 600; margin: 6px 0 0; }
 
 .compass-pick { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; }
 .compass-pick button {
@@ -233,6 +236,14 @@ details.more summary { cursor: pointer; font-weight: 650; padding: 8px 0; color:
 .note.warn strong { color: var(--warn); }
 .note.bad strong { color: var(--bad); }
 .note.good strong { color: var(--good); }
+.note.pretend { border: 2px solid var(--bad); color: var(--bad); margin: 8px 0; }
+
+/* angle + wind controls, right under the graphs */
+.tweak { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 0 18px; border-top: 1px solid var(--line); margin-top: 12px; padding-top: 4px; }
+.tweak .compass-pick { grid-template-columns: repeat(4, 1fr); }
+.aim { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 4px 0 8px; }
+.aim[hidden] { display: none; }
+.aim .small { flex-basis: 100%; margin: 0; }
 
 .empty { color: var(--ink-2); text-align: center; padding: 30px 10px; }
 
@@ -251,10 +262,10 @@ details.more summary { cursor: pointer; font-weight: 650; padding: 8px 0; color:
 @media (min-width: 900px) {
   main { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
   #step-rocket { grid-column: 1 / -1; }
-  #results { position: sticky; top: 12px; }
+  #results { position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow-y: auto; }
 }
 
-@media (min-width: 700px) and (max-width: 899px) {
+@media (min-width: 700px) {
   .views { grid-template-columns: 1fr 1fr; }
 }
 

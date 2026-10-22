@@ -181,6 +181,9 @@ def simulate(kit, config, engines, motors, launch=None, wind=None, overrides=Non
                 rod_exit_v = v_along
             if t > 5 and z <= 0:
                 return {"error": "no-liftoff"}
+            # ran out of push before reaching the end of a very long rod
+            if v_along <= 0 and z > 0:
+                return {"error": "stuck-on-rod", "rod_top_m": math.sqrt(x * x + y * y + z * z)}
             continue
 
         if not deployed:

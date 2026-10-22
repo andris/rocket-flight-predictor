@@ -161,6 +161,8 @@
           rodExitV = vAlong;
         }
         if (t > 5 && z <= 0) return { error: "no-liftoff" };
+        // ran out of push before reaching the end of a very long rod
+        if (vAlong <= 0 && z > 0) return { error: "stuck-on-rod", rod_top_m: Math.sqrt(x * x + y * y + z * z) };
         continue;
       }
 

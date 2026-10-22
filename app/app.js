@@ -27,6 +27,7 @@
     rod: ["Launch rod", "The metal rod that guides the rocket for its first few feet until it's going fast enough for the fins to keep it straight. Most Estes pads have a 3 ft rod."],
     recovery: ["Recovery", "What brings the rocket down gently: a parachute or a streamer. A streamer is a long ribbon that flutters and slows the rocket a little. It comes down faster, so it lands closer and the wind carries it less. A parachute lands softer but drifts much farther in wind."],
     descent: ["Descent rate", "How fast the rocket falls under its parachute or streamer. Slower means a softer landing but more drift."],
+    aim: ["Aiming into the wind", "Wind pushes the parachute downwind, so tilting the rod into the wind sends the rocket upwind first, and it drifts back toward the pad. The app tries every safe angle (no more than 30° from straight up) and picks the one that lands closest. Never tilt it toward people."],
   };
 
   const LANDMARKS = [
@@ -34,6 +35,38 @@
     [305, "the Statue of Liberty"], [555, "the Washington Monument"], [1063, "the Eiffel Tower"],
     [1454, "the Empire State Building"], [2717, "the Burj Khalifa, the world's tallest building"],
   ];
+
+  // ---------- realistic values ----------
+  // Cedar likes trying wild numbers. Anything outside "real" still runs, flagged red;
+  // only physically impossible values are ignored (the sim can't do them).
+  const tempOut = (c) => fmtInt(imp() ? c * 9 / 5 + 32 : c) + (imp() ? " °F" : " °C");
+  const TEMP_FUN = [[-273.15, "colder than absolute zero, the coldest anything can ever be"], [-89, "colder than the coldest temperature ever measured on Earth (-128 °F in Antarctica)"],
+    [56.7, "hotter than the hottest temperature ever measured on Earth (134 °F in Death Valley)"], [100, "hotter than boiling water"],
+    [1200, "hotter than lava"], [5500, "hotter than the surface of the Sun"]];
+  function judge(field, v) {
+    if (v == null) return { level: "ok" };
+    if (field === "rod") {
+      if (!(v > 0)) return { level: "impossible", msg: "A launch rod needs some length." };
+      if (v < 0.6 || v > 2.5) return { level: "odd", msg: `Not a real-world value: launch rods are about ${len(0.6)} to ${len(2.5)} long (most Estes pads: ${len(0.9)}).` };
+    } else if (field === "temp") {
+      if (v < -273.15) return { level: "impossible", msg: `Impossible: that's ${TEMP_FUN[0][1]}.` };
+      if (v < -29 || v > 46) {
+        const fun = v < 0 ? TEMP_FUN.filter((f) => f[0] < 0 && v < f[0]).pop() : TEMP_FUN.filter((f) => f[0] > 0 && v > f[0]).pop();
+        return { level: "odd", msg: `Not a real-world value: people launch rockets between about ${tempOut(-29)} and ${tempOut(46)}.${fun ? ` This is ${fun[1]}!` : ""}` };
+      }
+    } else if (field === "elev") {
+      if (v > 30000) return { level: "impossible", msg: "There's almost no air that high. Weather balloons pop around 100,000 ft." };
+      if (v < -430 || v > 4600) return { level: "odd", msg: `Not a real-world value: the lowest land on Earth is ${len(-430)} (the Dead Sea), and nobody launches from higher than about ${len(4600)}.` };
+    }
+    return { level: "ok" };
+  }
+  function showFlag(field, j) {
+    const el = $(field + "-flag");
+    el.hidden = j.level === "ok";
+    el.textContent = j.msg || "";
+    $(field).closest(".input-unit").classList.toggle("odd", j.level !== "ok");
+  }
+  const weightOdd = (w, kitG) => w != null && (w < kitG * 0.5 || w > kitG * 2.5);
 
   // ---------- storage (works without it) ----------
   function load(key, dflt) {
@@ -161,12 +194,13 @@
         : d > 0 ? `${mass(d)} (${pct.toFixed(0)}%) heavier than the kit. That's glue and paint!`
         : `${mass(-d)} (${(-pct).toFixed(0)}%) lighter than the kit.`;
       diff = `<p class="diff ${cls}">${words} The prediction uses your weight.</p>`;
+      if (weightOdd(w, kitG)) diff += `<p class="flag">Not a real-world value: a real build is usually within about 25% of the kit weight. The prediction still runs, just for fun.</p>`;
     }
     return `<div class="weight-row">
       <div class="label">${label}</div>
       <div class="kit-weight"><small>Estes kit${estimated ? " (our estimate)" : ""}</small><strong>${mass(kitG)}</strong></div>
       <div><small>We weighed</small>
-        <div class="input-unit"><input type="number" inputmode="decimal" step="any" min="0" data-weigh="${key}" value="${shown}" placeholder="—" aria-label="${esc(label)} weighed weight"><span>${imp() ? "oz" : "g"}</span></div>
+        <div class="input-unit${weightOdd(w, kitG) ? " odd" : ""}"><input type="number" inputmode="decimal" step="any" min="0" data-weigh="${key}" value="${shown}" placeholder="—" aria-label="${esc(label)} weighed weight"><span>${imp() ? "oz" : "g"}</span></div>
       </div>
     </div>${diff}`;
   }
@@ -186,7 +220,7 @@
 
   function renderCompass(el, value, attr) {
     el.innerHTML = PICK8.map(([lbl, deg]) => {
-      const on = Math.abs(((value - deg + 540) % 360) - 180) < 22.5;
+      const on = Math.round((((value % 360) + 360) % 360) / 45) % 8 * 45 === deg;
       return `<button type="button" data-${attr}="${deg}" class="${on ? "on" : ""}" aria-pressed="${on}">${lbl}</button>`;
     }).join("");
   }
@@ -208,6 +242,10 @@
     $("temp-unit").textContent = imp() ? "°F" : "°C";
     $("rod").value = imp() ? +(S.rodM / M_PER_FT).toFixed(1) : +S.rodM.toFixed(2);
     $("rod-unit").textContent = lenUnit();
+    showFlag("elev", judge("elev", S.elevM));
+    showFlag("temp", judge("temp", S.tempC));
+    showFlag("rod", judge("rod", S.rodM));
+    $("aim-box").hidden = S.windMs <= 0;
     document.querySelectorAll("[data-units]").forEach((b) => b.classList.toggle("on", b.dataset.units === S.units));
     renderSite();
   }
@@ -416,17 +454,51 @@
     return { cls: "warn", html: `<strong>Pops ${(-early).toFixed(1)} s after the top</strong>, when it's falling at ${speed(n.eject.speed)}. The perfect delay would be ${n.best_delay.toFixed(1)} s.${better}` };
   }
 
+  const launchNow = (angle, toward) => ({ angle_deg: angle, toward_deg: toward, rod_m: S.rodM, elev_m: S.elevM });
+  const windNow = () => ({ speed: S.windMs, from_deg: S.windFrom, temp_c: S.tempC });
+
+  // Values outside the real world that the prediction is using right now.
+  function pretendNote() {
+    const odd = [];
+    if (judge("rod", S.rodM).level !== "ok") odd.push(`a ${len(S.rodM)} launch rod`);
+    if (judge("temp", S.tempC).level !== "ok") odd.push(`${tempOut(S.tempC)} air`);
+    if (judge("elev", S.elevM).level !== "ok") odd.push(`a field ${len(S.elevM)} above sea level`);
+    const w = weights[S.kitId] || {}, k = kit();
+    if (weightOdd(w.rocket, k.mass_g) || boosterSpecs(k).some((b, i) => weightOdd(w["booster" + i], b.mass_g))) odd.push("a weight far from the kit's");
+    return odd.length ? `<div class="note pretend"><strong>Pretend flight:</strong> using ${odd.join(", ")}. A real rocket can't fly like this, but it's fun to see what the math says.</div>` : "";
+  }
+
+  // Try every safe angle tilted into the wind; keep the one landing closest to the pad.
+  function aimForPad() {
+    const k = flyKit(), c = config(), wind = windNow(), ov = overrides();
+    const toward = Math.round(S.windFrom) % 360;
+    const dist = (a) => {
+      const r = SIM.simulate(k, c, S.engines, CAT.motors, launchNow(a, toward), wind, ov);
+      return r.error ? Infinity : Math.hypot(r.landed.x, r.landed.y);
+    };
+    const tried = {};
+    const at = (a) => (tried[a] != null ? tried[a] : (tried[a] = dist(a)));
+    let best = 90;
+    for (let a = 60; a <= 90; a += 5) if (at(a) < at(best)) best = a;
+    for (let a = Math.max(60, best - 4); a <= Math.min(90, best + 4); a++) if (at(a) < at(best)) best = a;
+    return { angle: best, toward: toward, dist: at(best), straight: at(90) };
+  }
+
   function update() {
     persist();
     const k = flyKit(), c = config();
-    const launch = { angle_deg: S.angle, toward_deg: S.toward, rod_m: S.rodM, elev_m: S.elevM };
-    const wind = { speed: S.windMs, from_deg: S.windFrom, temp_c: S.tempC };
+    const launch = launchNow(S.angle, S.toward);
+    const wind = windNow();
+    $("results-more").innerHTML = "";
     let res;
     try { res = SIM.predict(k, c, S.engines, CAT.motors, launch, wind, overrides(), 60); }
-    catch (e) { $("results").innerHTML = `<h2>Prediction</h2><p class="empty">Something went wrong: ${esc(e.message)}</p>`; return; }
+    catch (e) { $("results-top").innerHTML = `<h2>Prediction</h2><p class="empty">Something went wrong: ${esc(e.message)}</p>`; return; }
     const n = res.nominal;
     if (n.error) {
-      $("results").innerHTML = `<h2>Prediction</h2><div class="note bad"><strong>Won't lift off.</strong> This engine can't lift this much weight. Check the weight you entered.</div>`;
+      const why = n.error === "stuck-on-rod"
+        ? `<strong>Never leaves the rod!</strong> The engine runs out of push ${len(n.rod_top_m)} up a ${len(S.rodM)} rod, and the rocket slides back down. Try a shorter rod.`
+        : `<strong>Won't lift off.</strong> This engine can't lift this much weight. Check the weight you entered.`;
+      $("results-top").innerHTML = `<h2>Prediction</h2>${pretendNote()}<div class="note bad">${why}</div>`;
       return;
     }
 
@@ -473,9 +545,9 @@
     notes.push({ cls: "", html: `${usingWeighed ? "Using the weight you measured." : "Using the Estes kit weight — weigh yours in step 3 for a better prediction."}${(k.estimated || []).length ? " Some numbers for this kit are our estimates (" + esc(k.estimated.join(", ")) + ")." : ""}` });
 
     const fc = S.fromForecast ? `<p class="small">Weather: forecast for ${esc(S.fromForecast)}.</p>` : "";
-    $("results").innerHTML = `
+    $("results-top").innerHTML = `
       <h2>Prediction: ${esc(k.name)} on ${esc(stageTxt)}${recOptions(kit()).length > 1 ? `, ${esc(recOpt().name.toLowerCase())}` : ""}</h2>
-      ${fc}
+      ${fc}${pretendNote()}
       <div class="big-row">
         <div class="big"><div class="k">How high ${term("apogee", "(apogee)")}</div>
           <div class="v">${len(n.apogee_m, { bare: true })}<small> ${lenUnit()}</small></div>
@@ -487,7 +559,8 @@
         <div class="view"><h3>From above (north is up)</h3>${mapSvg(res, land)}
           <div class="legend"><span><i style="background:var(--pad)"></i>pad</span><span><i style="background:var(--accent)"></i>best guess</span><span><i style="background:var(--cloud)"></i>other likely spots</span>${n.boosters.length ? `<span><i style="background:var(--booster)"></i>booster</span>` : ""}</div></div>
         <div class="view"><h3>From the side</h3>${sideSvg(res, land)}</div>
-      </div>
+      </div>`;
+    $("results-more").innerHTML = `
       <ol class="timeline">${tl.sort((a, b) => a[0] - b[0]).map((x) => x[1]).join("")}</ol>
       <div class="notes">${notes.map((x) => `<div class="note ${x.cls}">${x.html}</div>`).join("")}</div>`;
   }
@@ -505,7 +578,16 @@
     if (h.get("toward")) S.toward = +h.get("toward");
   }
 
+  // Sliders redraw on the next frame; typed numbers wait until typing pauses.
+  let pending = null;
+  function scheduleUpdate(wait) {
+    clearTimeout(pending);
+    pending = setTimeout(update, wait || 0);
+  }
+  const clearAim = () => { $("aim-out").textContent = ""; };
+
   function renderAll() {
+    clearAim();
     fixSelection();
     renderKits();
     renderEngines();
@@ -533,8 +615,19 @@
     if (d.engine) { S.engines[+d.stage] = d.engine; renderEngines(); update(); return; }
     if (d.recovery) { S.recovery = Object.assign({}, S.recovery, { [S.kitId]: d.recovery }); renderEngines(); renderWeights(); update(); return; }
     if (d.units) { S.units = d.units; renderAll(); return; }
-    if (d.toward != null) { S.toward = +d.toward; renderLaunch(); update(); return; }
-    if (d.from != null) { S.windFrom = +d.from; S.fromForecast = null; renderLaunch(); update(); return; }
+    if (d.toward != null) { S.toward = +d.toward; clearAim(); renderLaunch(); update(); return; }
+    if (d.from != null) { S.windFrom = +d.from; S.fromForecast = null; clearAim(); renderLaunch(); update(); return; }
+    if (b.id === "aim") {
+      const r = aimForPad();
+      S.angle = r.angle; S.toward = r.toward;
+      const dirTxt = `toward the ${dirWords(dir16(r.toward))}, into the wind`;
+      $("aim-out").textContent = r.angle === 90
+        ? "Straight up is already the best aim."
+        : `Tilt to ${r.angle}° ${dirTxt}. Lands about ${len(r.dist)} from the pad, instead of ${len(r.straight)} straight up.` +
+          (r.angle === 60 ? " That's the most tilt the safety code allows, so it can't get any closer." : "");
+      renderLaunch(); update();
+      return;
+    }
 
     if (b.id === "site-add-toggle") { $("site-add").hidden = !$("site-add").hidden; if (!$("site-add").hidden) $("site-q").focus(); return; }
     if (b.id === "site-search") {
@@ -608,16 +701,26 @@
 
   document.addEventListener("input", (ev) => {
     const t = ev.target;
-    if (t.id === "angle") { S.angle = +t.value; $("angle-out").textContent = S.angle + "°"; $("tilt-field").hidden = S.angle >= 90; update(); }
+    if (t.id === "angle") { S.angle = +t.value; $("angle-out").textContent = S.angle + "°"; $("tilt-field").hidden = S.angle >= 90; clearAim(); scheduleUpdate(); }
     else if (t.id === "wind") {
       S.windMs = imp() ? +t.value * MS_PER_MPH : +t.value / 3.6;
       S.fromForecast = null;
       $("wind-out").textContent = speed(S.windMs);
       $("wind-dir-field").hidden = S.windMs <= 0;
-      update();
-    } else if (t.id === "elev") { if (t.value !== "") { S.elevM = imp() ? +t.value * M_PER_FT : +t.value; update(); } }
-    else if (t.id === "temp") { S.tempC = t.value === "" ? null : imp() ? (+t.value - 32) * 5 / 9 : +t.value; update(); }
-    else if (t.id === "rod") { const v = +t.value; if (v > 0) { S.rodM = imp() ? v * M_PER_FT : v; update(); } }
+      $("aim-box").hidden = S.windMs <= 0;
+      clearAim();
+      scheduleUpdate();
+    } else if (t.id === "elev" || t.id === "temp" || t.id === "rod") {
+      if (t.value === "" && t.id !== "temp") return;   // mid-edit; keep the last value
+      const v = t.value === "" ? null : +t.value;
+      const m = v == null ? null : t.id === "temp" ? (imp() ? (v - 32) * 5 / 9 : v) : imp() ? v * M_PER_FT : v;
+      const j = judge(t.id, m);
+      showFlag(t.id, j);
+      if (j.level === "impossible") return;
+      if (t.id === "elev") S.elevM = m; else if (t.id === "temp") S.tempC = m; else S.rodM = m;
+      clearAim();
+      scheduleUpdate(300);
+    }
     else if (t.dataset.weigh) {
       const key = t.dataset.weigh, v = parseFloat(t.value);
       const w = weights[S.kitId] = weights[S.kitId] || {};
@@ -628,7 +731,7 @@
         if (key === "rocket") w.rocket_recovery = recOpt().id;
       }
       save("weights", weights);
-      update();
+      scheduleUpdate(300);
     }
   });
   // re-render the weight comparison once typing is done, so focus isn't lost mid-entry

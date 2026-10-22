@@ -1,6 +1,6 @@
 // Offline cache. tools/build.py rewrites VERSION whenever an app file changes,
 // which makes installed copies download the new files next time they're online.
-const VERSION = "8932f0ddcc";
+const VERSION = "93e0cbc48b";
 const FILES = [
   "./",
   "app.css",
