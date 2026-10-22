@@ -194,9 +194,9 @@
       const extra = S.showAll ? alsoFits(st, isBooster) : [];
       return `<div class="stage">
         <div class="stage-label">${label}</div>
-        ${S.showAll ? `<div class="chips-label">Estes recommends</div>` : ""}
+        ${S.showAll ? `<div class="chips-label"><strong>Estes recommends.</strong> Estes has tested these in this rocket. They're the safest choices.</div>` : ""}
         <div class="chips">${st.engines.map((e) => chip(e, i)).join("")}</div>
-        ${S.showAll ? `<div class="chips-label">Also fits, not on Estes's list</div>
+        ${S.showAll ? `<div class="chips-label"><strong>Also fits, not on Estes's list.</strong> Estes hasn't tested these in this rocket. Check the warnings under the prediction carefully before you launch one.</div>
           <div class="chips">${extra.length ? extra.map((e) => chip(e, i, true)).join("") : `<span class="small">No others in our engine list.</span>`}</div>` : ""}
       </div>`;
     }).join("") + `<label class="check"><input type="checkbox" id="show-all"${S.showAll ? " checked" : ""}> Show other engines that fit (${mm} mm)</label>`;
