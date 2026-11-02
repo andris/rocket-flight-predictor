@@ -1,0 +1,88 @@
+{
+ "source": "https://www.motorcato.org/",
+ "as_of": "2026-11-01",
+ "recent_from": "2024-11-01",
+ "reports_recent": 268,
+ "motors": {
+  "1/2A6": {
+   "recent": 0,
+   "share_now": 0.0,
+   "share_before": 0.0,
+   "ratio": null,
+   "p": 1.0,
+   "watch": false
+  },
+  "A8": {
+   "recent": 2,
+   "share_now": 0.0075,
+   "share_before": 0.0123,
+   "ratio": 0.61,
+   "p": 0.83883,
+   "watch": false
+  },
+  "B4": {
+   "recent": 2,
+   "share_now": 0.0075,
+   "share_before": 0.0049,
+   "ratio": 1.52,
+   "p": 0.51992,
+   "watch": false
+  },
+  "B6": {
+   "recent": 1,
+   "share_now": 0.0037,
+   "share_before": 0.0123,
+   "ratio": 0.3,
+   "p": 0.95265,
+   "watch": false
+  },
+  "C5": {
+   "recent": 22,
+   "share_now": 0.0821,
+   "share_before": 0.027,
+   "ratio": 3.04,
+   "p": 0.00123,
+   "watch": true
+  },
+  "C6": {
+   "recent": 16,
+   "share_now": 0.0597,
+   "share_before": 0.0688,
+   "ratio": 0.87,
+   "p": 0.73274,
+   "watch": false
+  },
+  "C11": {
+   "recent": 12,
+   "share_now": 0.0448,
+   "share_before": 0.0491,
+   "ratio": 0.91,
+   "p": 0.66851,
+   "watch": false
+  },
+  "D12": {
+   "recent": 60,
+   "share_now": 0.2239,
+   "share_before": 0.2162,
+   "ratio": 1.04,
+   "p": 0.44276,
+   "watch": false
+  },
+  "E16": {
+   "recent": 19,
+   "share_now": 0.0709,
+   "share_before": 0.0344,
+   "ratio": 2.06,
+   "p": 0.02557,
+   "watch": true
+  },
+  "F15": {
+   "recent": 31,
+   "share_now": 0.1157,
+   "share_before": 0.0516,
+   "ratio": 2.24,
+   "p": 0.00203,
+   "watch": true
+  }
+ }
+}

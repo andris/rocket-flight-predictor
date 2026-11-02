@@ -15,6 +15,7 @@ Open the GitHub Pages URL in Safari, tap Share → **Add to Home Screen**, and o
 - `app/`: the whole app. Plain HTML/CSS/JS with no build step and no frameworks. `sim.js` is the physics, `app.js` the UI, `catalog.js` the generated data, and `sw.js` the offline cache.
 - `data/kits.json`: the hand-curated kit catalog: dimensions, weights, recovery, Estes-recommended engines per configuration, and Estes's published altitude. Every guessed value is listed in the kit's `estimated` field.
 - `data/motors.json`: Estes thrust curves from ThrustCurve.org (`tools/fetch_motors.py`).
+- `data/cato.json`: the CATO watch list (`tools/fetch_cato.py`). Nobody publishes engine sales, so it compares each engine's share of Estes reports on motorcato.org in the last two years with the four years before, and flags engines whose share at least doubled. The app shows a calm note, never a warning.
 - `tools/sim.py`: a Python twin of `app/sim.js`, for checking the physics from the command line.
 
 The physics is a 3-DOF point-mass simulation:
@@ -30,6 +31,7 @@ The physics is a 3-DOF point-mass simulation:
 
 ```sh
 python3 tools/fetch_motors.py   # only when adding motors
+python3 tools/fetch_cato.py     # now and then: refreshes the CATO watch list from motorcato.org
 python3 tools/build.py          # after any edit to data/ or app/: rebuilds catalog.js, stamps the offline cache version
 python3 tools/check_sim.py      # Python and JS sims must agree (runs JS via macOS osascript)
 python3 tools/validate.py       # every kit/engine vs Estes's published altitude
@@ -42,4 +44,4 @@ Always run `build.py` before pushing. Otherwise installed copies won't notice th
 
 Add an entry to `data/kits.json`, copying an existing one. Take Estes's recommended engines exactly from the kit page or instructions. For a two-stage kit, list the booster first; its stage needs `mass_g` and `length_m`, and its engines must be `-0`. Run `build.py`: it rejects engines that don't exist or sit in the wrong stage.
 
-Data credits: motor data from [ThrustCurve.org](https://www.thrustcurve.org/); weather from [Open-Meteo](https://open-meteo.com/) (free for non-commercial use). Not affiliated with Estes.
+Data credits: motor data from [ThrustCurve.org](https://www.thrustcurve.org/); weather from [Open-Meteo](https://open-meteo.com/) (free for non-commercial use); CATO reports from [motorcato.org](https://www.motorcato.org/). Not affiliated with Estes.

@@ -153,6 +153,11 @@ main {
 .chip[data-engine].on { border-color: var(--good); background: var(--good-soft); color: var(--good); }
 .chip.extra { border-style: dashed; }
 .chip.extra.on { border-style: solid; border-color: var(--warn); background: var(--warn); color: var(--accent-ink); }
+/* CATO watch: calm sky blue, never red; a dot on the chip and a short note below */
+.chip.watch { position: relative; }
+.chip.watch::after { content: ""; position: absolute; top: 5px; right: 8px; width: 7px; height: 7px; border-radius: 50%; background: var(--sky); }
+.cato-note { font-size: 15px; color: var(--ink-2); margin: 8px 0 0; }
+.cato-dot { display: inline-block; width: 9px; height: 9px; margin-right: 8px; border-radius: 50%; background: var(--sky); }
 .chips-label { font-size: 14px; color: var(--ink-2); margin: 6px 0 4px; }
 .check { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 15px; cursor: pointer; }
 .check input { width: 22px; height: 22px; accent-color: var(--accent); }
@@ -262,9 +267,9 @@ details.more summary { cursor: pointer; font-weight: 650; padding: 8px 0; color:
 /* glossary popup */
 .pop { position: fixed; inset: 0; background: rgba(5, 10, 20, 0.5); display: grid; place-items: center; padding: 16px; z-index: 10; }
 .pop[hidden] { display: none; }
-.pop-body { background: var(--card); color: var(--ink); border-radius: var(--radius); max-width: 440px; width: 100%; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+.pop-body { background: var(--card); color: var(--ink); border-radius: var(--radius); max-width: 440px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
 .pop-body h3 { margin: 0 0 8px; font-size: 20px; }
-.pop-body p { margin: 0 0 16px; }
+.pop-body p { margin: 0 0 16px; white-space: pre-line; }
 .pop-body button { border: 0; background: var(--accent); color: var(--accent-ink); border-radius: 10px; padding: 10px 18px; min-height: 44px; font-weight: 700; cursor: pointer; }
 
 /* iPad and up: setup on the left, results on the right */

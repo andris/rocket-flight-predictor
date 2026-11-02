@@ -30,6 +30,22 @@
     aim: ["Aiming into the wind", "Wind pushes the parachute downwind, so tilting the rod into the wind sends the rocket upwind first, and it drifts back toward the pad. The app tries every safe angle (no more than 30° from straight up) and picks the one that lands closest. Never tilt it toward people."],
   };
 
+  // ---------- CATO watch (tools/fetch_cato.py) ----------
+  // Engines whose share of motorcato.org reports jumped lately. Kept calm on purpose:
+  // the point is "fly it, follow the safety code", not "be scared of it".
+  const CATO = (CAT.cato && CAT.cato.motors) || {};
+  const onWatch = (name) => !!(CATO[name] && CATO[name].watch);
+  const timesWords = (r) => r == null ? "more often than they used to" : r < 2.5 ? "about twice as often as they used to" : r < 3.5 ? "about three times as often as they used to" : `about ${Math.round(r)} times as often as they used to`;
+  Object.keys(CATO).filter(onWatch).forEach((name) => {
+    const c = CATO[name], feet = CAT.motors[name].impulse_ns <= 10 ? 15 : 30;
+    TERMS["cato-" + name] = [`CATO watch: ${name}`, [
+      `A CATO (say "KAY-toe") is when an engine breaks on the pad or just after liftoff instead of pushing the rocket up. It's rare, but it can be loud and it can damage the rocket.`,
+      `Rocketeers report CATOs at motorcato.org so engine makers can find and fix problems. Lately ${name} engines show up in those reports ${timesWords(c.ratio)} (${c.recent} reports in the last two years).`,
+      `That doesn't mean yours will fail. Almost every ${name} flies just fine. Nobody knows the exact odds, because nobody counts how many get launched.`,
+      `So go fly it! Do what the safety code always says: stand back at least ${feet} feet, count down out loud, and use a sturdy launch pad. If one ever does CATO, report it at motorcato.org. That's how this list stays useful.`,
+    ].join("\n\n")];
+  });
+
   const LANDMARKS = [
     [18, "a giraffe"], [45, "a school bus standing on end"], [151, "the Statue of Liberty without her base"],
     [305, "the Statue of Liberty"], [555, "the Washington Monument"], [1063, "the Eiffel Tower"],
@@ -187,7 +203,7 @@
       ? k.configs.map((x) => `<button type="button" data-config="${x.id}" class="${x.id === c.id ? "on" : ""}">${esc(x.name)}</button>`).join("")
       : "";
     $("engine-title").textContent = c.stages.length > 1 ? "Pick the engines" : "Pick the engine";
-    const chip = (e, i, extra) => `<button type="button" class="chip${extra ? " extra" : ""}${S.engines[i] === e ? " on" : ""}" data-stage="${i}" data-engine="${esc(e)}">${esc(e)}</button>`;
+    const chip = (e, i, extra) => `<button type="button" class="chip${extra ? " extra" : ""}${S.engines[i] === e ? " on" : ""}${onWatch(SIM.parseEngine(e)[0]) ? " watch" : ""}" data-stage="${i}" data-engine="${esc(e)}">${esc(e)}</button>`;
     const mm = motorOf(c.stages[0].engines[0]).diameter_mm;
     $("stages").innerHTML = c.stages.map((st, i) => {
       const isBooster = i < c.stages.length - 1;
@@ -209,6 +225,8 @@
     const m = motorOf(top);
     const letter = name.replace(/[0-9]+$/, "");
     const push = name.slice(letter.length);
+    const watched = S.engines.map((e) => SIM.parseEngine(e)[0]).filter((n, i, a) => onWatch(n) && a.indexOf(n) === i);
+    $("cato").innerHTML = watched.map((n) => `<p class="cato-note"><span class="cato-dot" aria-hidden="true"></span>${term("cato-" + n, `${esc(n)} is on CATO watch`)}: still a great engine to fly. Tap to see why.</p>`).join("");
     $("engine-explain").innerHTML = `${esc(top)}: ${esc(letter)} = ${m.impulse_ns.toFixed(1)} newton-seconds of total power, ${esc(push)} = about ${esc(push)} newtons of average push, ${delay} = ${term("delay", `${delay}-second delay`)} before the parachute pops. ${term("engine", "How engine codes work")}`;
   }
 
