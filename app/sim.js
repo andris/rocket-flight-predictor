@@ -13,6 +13,7 @@
   const WIND_REF_M = 10;    // forecast wind is measured at 10 m
   const WIND_EXP = 1 / 7;   // power-law wind profile
   const TURN_K = 0.15;      // how fast fins swing the nose into the relative wind, per (m/s of airspeed) per second
+  const MAX_DRAG_STEP = 0.3; // cap on (drag / mass) x dt: a very light rocket brakes so hard a fixed step overshoots and blows up
 
   function airDensity(fieldElev, z, tempC) {
     const alt = fieldElev + z;
@@ -136,7 +137,7 @@
     }
 
     for (;;) {
-      const dt = !deployed && burnoutT == null ? 0.002 : !deployed ? 0.01 : 0.05;
+      let dt = !deployed && burnoutT == null ? 0.002 : !deployed ? 0.01 : 0.05;
       const m = stackMass(t);
       let thrust = 0;
       if (!deployed && burnoutT == null) thrust = ms[stage].thrust(t - stageT0) * ov.thrust_scale;
@@ -166,7 +167,9 @@
         continue;
       }
 
-      let cda;
+      const cda = deployed ? cdaBody + cdaRec : cdaBody;
+      const drag = 0.5 * rho * cda * vr;
+      if (drag * dt > MAX_DRAG_STEP * m) dt = (MAX_DRAG_STEP * m) / drag;
       if (!deployed) {
         if (vr > 0.5) {
           // fins swing the nose toward the relative wind, faster the faster it flies
@@ -175,12 +178,8 @@
           const an = Math.sqrt(ax * ax + ay * ay + az2 * az2);
           axis = [ax / an, ay / an, az2 / an];
         }
-        cda = cdaBody;
-      } else {
-        cda = cdaBody + cdaRec;
       }
 
-      const drag = 0.5 * rho * cda * vr;
       vx += ((thrust * axis[0] - drag * rx) / m) * dt;
       vy += ((thrust * axis[1] - drag * ry) / m) * dt;
       vz += ((thrust * axis[2] - drag * rz) / m - G) * dt;
@@ -242,11 +241,11 @@
     const m = b.mass;
     let t = b.t, apogee = z;
     while (z > 0 && t < 600) {
-      const dt = 0.02;
       const [wx, wy] = windAt(z, wind.speed, wind.from_deg);
       const rx = vx - wx, ry = vy - wy, rz = vz;
       const vr = Math.sqrt(rx * rx + ry * ry + rz * rz);
       const drag = 0.5 * airDensity(launch.elev_m, z, wind.temp_c) * cda * vr;
+      const dt = Math.min(0.02, drag > 0 ? (MAX_DRAG_STEP * m) / drag : 0.02);
       vx += ((-drag * rx) / m) * dt;
       vy += ((-drag * ry) / m) * dt;
       vz += ((-drag * rz) / m - G) * dt;

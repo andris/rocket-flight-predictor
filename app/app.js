@@ -84,6 +84,7 @@
   };
   const S = Object.assign({}, DEFAULTS, load("state", {}));
   let weights = load("weights", {});   // {kitId: {rocket: g, booster0: g, updated: iso}}
+  let zeroWeigh = null;                // weight box just set to 0 or less (ignored; kit weight used)
   let sites = load("sites", []);       // [{id, name, lat, lon, elev_m, forecast}]
 
   function persist() { save("state", S); }
@@ -223,6 +224,8 @@
         : `${mass(-d)} (${(-pct).toFixed(0)}%) lighter than the kit.`;
       diff = `<p class="diff ${cls}">${words} The prediction uses your weight.</p>`;
       if (weightOdd(w, kitG)) diff += `<p class="flag">Not a real-world value: a real build is usually within about 25% of the kit weight. The prediction still runs, just for fun.</p>`;
+    } else if (zeroWeigh === k.id + ":" + key) {
+      diff = `<p class="flag">A rocket can't weigh nothing, so the prediction uses the Estes kit weight.</p>`;
     }
     return `<div class="weight-row">
       <div class="label">${label}</div>
@@ -761,6 +764,7 @@
     else if (t.dataset.weigh) {
       const key = t.dataset.weigh, v = parseFloat(t.value);
       const w = weights[S.kitId] = weights[S.kitId] || {};
+      zeroWeigh = t.value !== "" && !(v > 0) ? S.kitId + ":" + key : null;
       if (t.value === "" || !(v > 0)) delete w[key];
       else {
         w[key] = imp() ? v * G_PER_OZ : v;

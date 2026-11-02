@@ -16,6 +16,7 @@ TUMBLE_CD = 1.0         # booster tumbling, on side area (length x diameter)
 WIND_REF_M = 10.0       # forecast wind is measured at 10 m
 WIND_EXP = 1 / 7        # power-law wind profile
 TURN_K = 0.15           # how fast fins swing the nose into the relative wind, per (m/s of airspeed) per second
+MAX_DRAG_STEP = 0.3     # cap on (drag / mass) x dt: a very light rocket brakes so hard a fixed step overshoots and blows up
 
 
 def air_density(field_elev, z, temp_c=None):
@@ -186,6 +187,10 @@ def simulate(kit, config, engines, motors, launch=None, wind=None, overrides=Non
                 return {"error": "stuck-on-rod", "rod_top_m": math.sqrt(x * x + y * y + z * z)}
             continue
 
+        cda = cda_body + cda_rec if deployed else cda_body
+        drag = 0.5 * rho * cda * vr
+        if drag * dt > MAX_DRAG_STEP * m:
+            dt = MAX_DRAG_STEP * m / drag
         if not deployed:
             if vr > 0.5:
                 # fins swing the nose toward the relative wind, faster the faster it flies
@@ -193,11 +198,7 @@ def simulate(kit, config, engines, motors, launch=None, wind=None, overrides=Non
                 a3 = [a + (r / vr - a) * f for a, r in zip(axis, (rx, ry, rz))]
                 an = math.sqrt(sum(c * c for c in a3))
                 axis = tuple(c / an for c in a3)
-            cda = cda_body
-        else:
-            cda = cda_body + cda_rec
 
-        drag = 0.5 * rho * cda * vr
         ax = (thrust * axis[0] - drag * rx) / m
         ay = (thrust * axis[1] - drag * ry) / m
         az_ = (thrust * axis[2] - drag * rz) / m - G
@@ -266,11 +267,11 @@ def fly_booster(b, wind, launch, diameter):
     t = b["t"]
     apogee = z
     while z > 0 and t < 600:
-        dt = 0.02
         wx, wy = wind_at(z, wind["speed"], wind["from_deg"])
         rx, ry, rz = vx - wx, vy - wy, vz
         vr = math.sqrt(rx * rx + ry * ry + rz * rz)
         drag = 0.5 * air_density(launch["elev_m"], z, wind["temp_c"]) * cda * vr
+        dt = min(0.02, MAX_DRAG_STEP * m / drag if drag > 0 else 0.02)
         vx += (-drag * rx / m) * dt
         vy += (-drag * ry / m) * dt
         vz += (-drag * rz / m - G) * dt
