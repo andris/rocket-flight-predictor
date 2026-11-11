@@ -82,6 +82,42 @@
       ]
     },
     {
+      "id": "astro-assembler",
+      "name": "Astro Assembler",
+      "sku": "000649",
+      "skill": "Beginner",
+      "source": "https://estesrockets.com/products/astro-assembler",
+      "length_m": 0.381,
+      "diameter_m": 0.0264,
+      "mass_g": 70.8,
+      "cd": 0.75,
+      "recovery": {
+        "type": "parachute",
+        "diameter_in": 15
+      },
+      "estes_max_altitude_ft": 850,
+      "estes_altitude_note": "Estes: up to 850 ft",
+      "estimated": [
+        "cd",
+        "mass_g (Estes calls 2.5 oz an estimated weight)"
+      ],
+      "configs": [
+        {
+          "id": "single",
+          "name": "Single stage",
+          "stages": [
+            {
+              "engines": [
+                "B4-4",
+                "B6-4",
+                "C6-5"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "big-bertha",
       "name": "Big Bertha",
       "sku": "001948",
@@ -424,6 +460,41 @@
           "type": "parachute",
           "diameter_in": 15,
           "mass_delta_g": 8
+        }
+      ]
+    },
+    {
+      "id": "crimson-fury",
+      "name": "Crimson Fury",
+      "sku": "009729",
+      "skill": "Advanced",
+      "source": "https://estesrockets.com/products/crimson-fury",
+      "length_m": 1.461,
+      "diameter_m": 0.0635,
+      "mass_g": 439,
+      "cd": 0.75,
+      "recovery": {
+        "type": "parachute",
+        "diameter_in": 24
+      },
+      "estes_max_altitude_ft": 700,
+      "estes_altitude_note": "Estes: about 700 ft",
+      "estimated": [
+        "cd",
+        "mass_g (Estes calls 15.5 oz an estimated weight)"
+      ],
+      "configs": [
+        {
+          "id": "single",
+          "name": "Single stage",
+          "stages": [
+            {
+              "engines": [
+                "E16-4",
+                "F15-4"
+              ]
+            }
+          ]
         }
       ]
     }
