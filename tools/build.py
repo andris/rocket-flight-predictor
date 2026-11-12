@@ -27,6 +27,8 @@ def main():
     motors = json.loads((ROOT / "data" / "motors.json").read_text())
     errors = []
     for kit in kits:
+        if kit.get("launch_rod_in") not in ("1/8", "3/16", "1/4"):
+            errors.append(f"{kit['id']}: launch_rod_in must be 1/8, 3/16 or 1/4 (Estes's Launch Rod Size)")
         opts = kit.get("recovery_options")
         if opts:
             first = {k: v for k, v in opts[0].items() if k not in ("id", "name", "mass_delta_g")}

@@ -611,7 +611,9 @@
           <div class="legend"><span><i style="background:var(--pad)"></i>pad</span><span><i style="background:var(--accent)"></i>best guess</span><span><i style="background:var(--cloud)"></i>other likely spots</span>${n.boosters.length ? `<span><i style="background:var(--booster)"></i>booster</span>` : ""}</div></div>
         <div class="view"><h3>From the side</h3>${sideSvg(res, land)}</div>
       </div>`;
+    const guide = `${k.launch_rod_in}" rod${k.launch_rail ? ` or the ${k.launch_rail}` : ""}`;
     $("results-more").innerHTML = `
+      <p class="launch-guide"><strong>Launches from:</strong> ${esc(guide)}</p>
       <ol class="timeline">${tl.sort((a, b) => a[0] - b[0]).map((x) => x[1]).join("")}</ol>
       <div class="notes">${notes.map((x) => `<div class="note ${x.cls}">${x.html}</div>`).join("")}</div>`;
   }

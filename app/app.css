@@ -240,6 +240,7 @@ details.more summary { cursor: pointer; font-weight: 650; padding: 8px 0; color:
 .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--ink-2); padding: 4px 6px; }
 .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
 
+.launch-guide { margin: 12px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--bg); font-size: 15px; }
 .timeline { list-style: none; padding: 0; margin: 12px 0; display: grid; gap: 8px; }
 .timeline li { display: grid; grid-template-columns: 64px 1fr; gap: 10px; align-items: baseline; }
 .timeline .t { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--accent); text-align: right; }
